@@ -1,0 +1,3 @@
+[submodule "rmf-web"]
+	path = rmf-web
+	url = https://github.com/open-rmf/rmf-web.git
