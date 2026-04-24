@@ -194,20 +194,29 @@ def render_level(ctx: RunContext[RmfDeps], level_name: str) -> str:
         if v.get("name")
     ]
 
+    named_set = set(named_waypoints)
+
     if not os.path.exists(ann_path):
         annotations = {level_name: {wp: "" for wp in named_waypoints}}
+        removed = []
     else:
         with open(ann_path) as f:
             annotations = json.load(f)
         level_ann = annotations.setdefault(level_name, {})
+        # add missing
         for wp in named_waypoints:
             level_ann.setdefault(wp, "")
+        # remove stale
+        removed = [wp for wp in list(level_ann) if wp not in named_set]
+        for wp in removed:
+            del level_ann[wp]
 
     with open(ann_path, "w") as f:
         json.dump(annotations, f, indent=2)
 
     new_count = sum(1 for wp in named_waypoints if not annotations[level_name].get(wp))
-    return f"Rendered to {out_path}, annotations at {ann_path} ({new_count} empty entries)"
+    removed_str = f", removed stale: {removed}" if removed else ""
+    return f"Rendered to {out_path}, annotations at {ann_path} ({new_count} empty entries{removed_str})"
 
 
 if __name__ == "__main__":
