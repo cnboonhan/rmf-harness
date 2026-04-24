@@ -1,0 +1,10 @@
+[project]
+name = "rmf-harness"
+version = "0.1.0"
+description = "Harness for RMF API multi-level building logistics tasks"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "pydantic-ai>=1.86.1",
+    "pyjwt>=2.12.1",
+]
