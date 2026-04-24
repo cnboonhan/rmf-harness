@@ -1,2 +1,4 @@
 api-server.*
 db
+__pycache__/
+.states
