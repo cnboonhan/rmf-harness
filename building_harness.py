@@ -87,6 +87,12 @@ def render_level(ctx: RunContext[RmfDeps], level_name: str) -> str:
         corners_px = [world_to_pixel(*rotate(cx, cy, yaw)) for cx, cy in corners_world]
         draw.polygon(corners_px, outline=(80, 160, 255, 255), fill=(80, 160, 255, 60))
         draw.text((px + 2, py + 2), lift["name"], fill=(80, 160, 255, 255))
+        for door in lift.get("doors", []):
+            p1 = world_to_pixel(door["v1_x"], door["v1_y"])
+            p2 = world_to_pixel(door["v2_x"], door["v2_y"])
+            draw.line([p1, p2], fill=(80, 220, 255, 255), width=4)
+            mx, my = (p1[0] + p2[0]) / 2, (p1[1] + p2[1]) / 2
+            draw.text((mx + 2, my + 2), door["name"], fill=(80, 220, 255, 255))
 
     os.makedirs(".states", exist_ok=True)
     out_path = f".states/rmf_{level_name}.png"
