@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "waypoint_annotations",
+  "title": "Waypoint Annotations",
+  "description": "Text annotations for RMF building map waypoints, keyed by level name then waypoint name.",
+  "type": "object",
+  "additionalProperties": {
+    "title": "Level",
+    "description": "Level name (e.g. 'L1', 'L2')",
+    "type": "object",
+    "additionalProperties": {
+      "title": "Waypoint annotation",
+      "description": "Human-readable description of notable things at this waypoint",
+      "type": "string"
+    }
+  },
+  "examples": [
+    {
+      "L1": {
+        "lobby": "Hotel main entrance, reception desk, high foot traffic",
+        "restaurant": "Dining area, busy during meal times",
+        "tinybot_charger": "Charging station for tinybots, corner near service corridor"
+      },
+      "L2": {
+        "room_101": "Guest room 101, narrow doorway, do not block"
+      }
+    }
+  ]
+}

@@ -5,6 +5,7 @@ description = "Harness for RMF API multi-level building logistics tasks"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
+    "graphviz>=0.21",
     "pillow>=12.2.0",
     "pydantic-ai>=1.86.1",
     "pyjwt>=2.12.1",
