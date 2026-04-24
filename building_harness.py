@@ -7,13 +7,47 @@ from pydantic_ai import Agent, RunContext
 from rmf_config import RMF_BASE, RmfDeps, make_client, model
 from PIL import Image, ImageDraw
 
+PARAM_TYPE_VALUE = {1: "value_int", 2: "value_float", 3: "value_string", 4: "value_bool"}
+
 agent = Agent(
     model,
     deps_type=RmfDeps,
     system_prompt=(
-        "You are an RMF building operator. Use the available tools to render floor plans. Be concise."
+        "You are an RMF building operator. Use the available tools to render floor plans "
+        "and query waypoint annotations. Be concise."
     ),
 )
+
+
+@agent.tool
+def query_waypoints(ctx: RunContext[RmfDeps], level_name: str) -> list[dict]:
+    """
+    Return all waypoints for a level with their nav graph annotations (params).
+    Use this to answer questions like 'which waypoint is a charger / parking spot / holding point'.
+    """
+    resp = ctx.deps.client.get(f"{RMF_BASE}/building_map")
+    resp.raise_for_status()
+    bmap = resp.json()
+
+    level = next((l for l in bmap.get("levels", []) if l["name"] == level_name), None)
+    if level is None:
+        return [{"error": f"Level '{level_name}' not found. Available: {[l['name'] for l in bmap['levels']]}"}]
+
+    waypoints = []
+    for graph_idx, graph in enumerate(level.get("nav_graphs", [])):
+        for vertex in graph.get("vertices", []):
+            annotations = {
+                p["name"]: p[PARAM_TYPE_VALUE.get(p["type"], "value_string")]
+                for p in vertex.get("params", [])
+            }
+            waypoints.append({
+                "name": vertex["name"],
+                "x": vertex["x"],
+                "y": vertex["y"],
+                "graph": graph_idx,
+                "annotations": annotations,
+            })
+    return waypoints
 
 
 @agent.tool
